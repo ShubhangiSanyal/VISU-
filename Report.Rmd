@@ -1,0 +1,127 @@
+---
+title: "**Visualization Project**"
+subtitle: "**Civil Engineering: Cement Manufacturing Dataset**"
+author: "Shubhangi Sanyal <br> Rollno: MDS202238"
+date: 'Date: 28th October, 2022'
+output: html_document
+---
+<style type="text/css">
+  body{
+  font-size: 12pt;
+  font-family: lustria, san-serif
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+## **Abstract**
+
+In civil engineering, concrete forms a major part of most projects. Among all materials used in construction, concrete is the most crucial to any structure. Measuring and understanding the concrete compressive strength, thus, is vital. It has been observed that the concrete compressive strength is a highly nonlinear function of age and ingredients. Some of these ingredients are cement, blast furnace slag, fly ash, water, superplasticizer, coarse aggregate, and fine aggregate.
+
+## **Dataset Description**
+
+The actual concrete compressive strength (MPa - Mega Pascal) for a given mixture under a specific age (days) was determined from a laboratory. The data has 8 quantitative input variables, 1 quantitative output variable, and 1030 instances (observations). The variables can be described as:
+
+- `cement` (Cement) : measured in kg in a m^3^ mixture
+- `slag` (Blast) : measured in kg in a m^3^ mixture
+- `ash` (Fly ash) : measured in kg in a m^3^ mixture
+- `water` (Water) : measured in kg in a m^3^ mixture
+- `superplastic` (Superplasticizer) : measured in kg in a m^3^ mixture
+- `coarseagg` (Coarse Aggregate) : measured in kg in a m^3^ mixture
+- `fineagg` (Fine Aggregate) : measured in kg in a m^3^ mixture
+- `age` (Age) : day (1~365)
+- `strength` (Concrete compressive strength): measured in MPa
+
+## **Objectives**
+
+Using the data described above, data visualization can be used to determine the following:
+
+- How each ingredient is distributed
+- How the proportion of each ingredient varies with different values of concrete compressive strength
+- How the proportion of each ingredient varies with age
+- How each ingredient proportion varies with each other when any two are taken at a time
+- Finally, how any two ingredient behaves when compared to the concrete compressive strength.
+- The above objectives can be achieved using histograms, and boxplots for univariate analysis, scatter plots and line plots for bivariate analysis, and gradient scatter plots for multivariate analysis. 
+
+## **Univariate Analysis**
+
+### Histogram
+
+A histogram can be quite useful in visualizing the distribution of each ingredient across a 1030 instances. The following shows a sample of such histograms by plotting the cement values of all observations.
+
+```{r, echo=FALSE, include=FALSE}
+library(ggplot2)
+```
+
+```{r}
+data <- read.csv("concrete.csv", header=TRUE, stringsAsFactors=FALSE)
+# Univariate analysis
+
+## Histogram
+ggplot(data, aes(cement)) + geom_histogram(color="black")+
+  xlab("Cement")+ylab("Frequency")+ggtitle("Histogram of cement")
+```
+
+### Boxplot of all attributes
+The boxplot of all the attributes (input and output) gives us a general idea of the range of their values and provides more descriptive statistical measures like mean, median, maximum, and minimum which can be useful for creating concrete mixtures. Further, it is useful in spotting outliers in the data. The following gives the boxplot described above.
+
+```{r}
+long_data <- data.frame(ingredient=rep(c("cement","slag","ash","water",
+                                      "superplastic","coarseagg","fineagg",
+                                      "age","strength"), each=1030),
+                       amount=c(data$cement, data$slag, data$ash, data$water, 
+                                data$superplastic, data$coarseagg, 
+                                data$fineagg, data$age, data$strength))
+ggplot(long_data, aes(x=ingredient,y=amount,fill=ingredient))+geom_boxplot()+
+  ggtitle("Boxplot of all variables")+theme(legend.position="None")+ 
+  scale_fill_brewer(palette="Paired")
+```
+
+## **Bivariate Analysis**
+
+### Relationship between any two ingredients
+
+The relationship between any two ingredients that are used in the composition of concrete can be observed using a scatterplot and a line plot. For further examination, more statistical tests are required. The following gives the scatter and line plot for the ingredients ‘water’ and ‘slag’.
+
+```{r}
+# Bivariate analysis
+
+## Scatter plot 
+ggplot(data, aes(x = water, y = slag)) + geom_point(color="blue")+
+  ggtitle("Scatter plot of water and slag")
+
+## Line plot
+ggplot(data, aes(x = water, y = slag)) + geom_line(color="blue")+
+  ggtitle("Line plot of water and slag")
+```
+
+
+### Relationship of an ingredient with concrete compressive strength
+
+Further, an ingredient’s change of behaviour with respect to the concrete compressive strength which is the output variable can be observed through a scatter plot. Additionally, a line of best fit has been added to the plots to better conclude their relationship.
+
+```{r}
+## Scatter plot with output variable
+ggplot(data, aes(x = cement, y = strength)) + 
+  geom_point(color="cornflowerblue")+
+  geom_smooth(color="tomato")+
+  ggtitle("Scatter plot of cement and compressive strength")
+```
+
+
+### **Multivariate Analysis**
+
+### Relationship of any two ingredients with concrete compressive strength
+
+In a more complicated analysis, the scatter plot is used to map the behaviour of not just one but two ingredients against the compressive strength. This is done by using a colour gradient on the scatter plot as seen in the following scatter plot. 
+
+```{r}
+# Multivariate Analysis
+ggplot(data, aes(x = cement, y = strength, color = water)) + geom_point(size=1.7)+
+  scale_color_gradient(low="blue", high="yellow")+
+  ggtitle("Scatter plot with 2 independent and 1 dependent variable")
+```
+
