@@ -1,5 +1,6 @@
 library(shiny)
 library(shinydashboard)
+library(dashboardthemes)
 library(ggplot2)
 
 ui <- dashboardPage(
@@ -8,16 +9,29 @@ ui <- dashboardPage(
     width=240,
     sidebarMenu(
       menuItem("About",tabName = "tab1"),
-      menuItem("Viewing attributes",tabName = "tab2"),
+      menuItem("Dataset",tabName = "tab0"),
+      menuItem("Visualizing attributes",tabName = "tab2"),
       menuItem("Bivariate relations",tabName = "tab3"),
       menuItem("Multivariate relations",tabName = "tab4"),
-      menuItem("Conclusion",tabName = "tab5")
+      menuItem("Conclusion",tabName = "tab5"),
+      menuItem("Credits",tabName = "tab6")
     )
   ),
   dashboardBody(
+    shinyDashboardThemes(theme = "flat_red"),
     tabItems(
+      tabItem("tab0", fluidPage(align="center",
+        tags$p("The variables of the dataset have been described in the ", 
+               tags$i("About"), "section. Here's a view of the dataset based 
+               on your selected range!"),
+        sliderInput("row", label = "Select range of rows", min = 1, 
+                    max = 1030, value = c(1, 5)),
+        actionButton("go0","Show"),
+        tableOutput("Data")
+      )),
       tabItem("tab1",fluidPage(
         tags$b(tags$h1("Abstract", style="color: red")),
+        tags$hr(),
         tags$p("In civil engineering, concrete forms a major part of most projects. 
                Among all materials used in construction, concrete is the most crucial 
                to any structure. Measuring and understanding the concrete compressive strength, 
@@ -26,7 +40,8 @@ ui <- dashboardPage(
                cement, blast furnace slag, fly ash, water, superplasticizer, coarse aggregate, 
                and fine aggregate."), 
         tags$b(tags$h1("Objectives", style="color: red")),
-        tags$p("Using the data described above, data visualization can be used to 
+        tags$hr(),
+        tags$p("Using the data described below, data visualization can be used to 
                determine the following:"),
         tags$ul(
           tags$li("How each ingredient is distributed"),
@@ -43,6 +58,7 @@ ui <- dashboardPage(
                for bivariate analysis, and gradient scatter plots for 
                multivariate analysis."),
         tags$b(tags$h1("Dataset Description", style="color: red")),
+        tags$hr(),
         tags$p("This dataset has been taken from ",
                tags$i(tags$a(href="https://www.kaggle.com/datasets/vinayakshanawad/cement-manufacturing-concrete-dataset",
                       "Kaggle", style="color: red")),
@@ -54,6 +70,7 @@ ui <- dashboardPage(
         tableOutput("table")
       )),
       tabItem("tab2",h1("Univariate Analysis", style="color: red"), fluidPage(
+        tags$hr(),
         tabsetPanel(
           tabPanel("Histogram", fluid=TRUE,
                    tags$br(),
@@ -69,12 +86,12 @@ ui <- dashboardPage(
                                         'coarseagg','fineagg','age', 'strength'),
                                     selected=1),
                        selectInput(inputId="color1",label="Choose colour of histogram",choices = 
-                                     c("black","grey","white","steelblue","green","blue","brown","purple")),
+                                     c("yellow","grey","white","steelblue","green","blue","brown","purple")),
                        sliderInput("bins", p("Number of bins"),
                                    min = 1, max = 50, value = 22),
                        actionButton("go1","Show")
                      ),
-                     mainPanel(plotOutput("histogram"),textOutput("write"))
+                     mainPanel(plotOutput("histogram"))
                    )
           ),
           tabPanel("Boxplot", fluid=TRUE,
@@ -99,6 +116,7 @@ ui <- dashboardPage(
         )
       )),
       tabItem("tab3",h1("Bivariate Analysis", style="color: red"), fluidPage(
+        tags$hr(),
         tags$b("Scatter plot and line of best fit"),
         tags$p("The relationship between any two ingredients that are used in the 
                composition of concrete or an ingredient’s change of behaviour with 
@@ -115,9 +133,11 @@ ui <- dashboardPage(
             actionButton("go2","Show")
           ),
           mainPanel(plotOutput("BiScatter"))
-        )
+        ),
+        tags$i("(Note: if more than 2 attributes are selected, only the first 2 will be considered)")
       )),
       tabItem("tab4",h1("Multivariate Analysis", style="color: red"), fluidPage(
+        tags$hr(),
         tags$b("Scatter plots with colour gradient"),
         tags$p("In a more complicated analysis, the scatter plot is used to map 
                the behaviour of not just one but two ingredients against a third 
@@ -133,37 +153,92 @@ ui <- dashboardPage(
             actionButton("go3","Show")
           ),
           mainPanel(plotOutput("MulScatter"))
+        ),
+        tags$i("(Note: if more than 3 attributes are selected, only the first 3 will be considered)")
+      )),
+      tabItem("tab5",h1("Conclusion", style="color: red"), fluidPage(
+        tags$hr(),
+        tags$p("The following points summarize the observations in this report:"),
+        tags$br(),
+        tags$ol(
+          tags$li("From the distribution of the attributes, some of the observations 
+                  are as follows:"),
+          tags$ul(
+            tags$li("most of the time the amount of cement varies from 140 to 160"),
+            tags$li("amount of water varies from 190 to 192.5 with a probability of 0.56")
+          ),
+          tags$br(),
+          tags$li("The interactions of each ingredient with the age of concrete 
+                  provides the observations stated below:"),
+          tags$ul(
+            tags$li("cement, water and concrete strength are positively correlated with age"),
+            tags$li("blast (slag), fly ash, superplasticizer, course and fine aggregate 
+                    are negatively correlated with age")
+          ),
+          tags$br(),
+          tags$li("The interactions of each ingredient with the concrete strength 
+                  provides the observations stated below:"),
+          tags$ul(
+            tags$li("cement, blast (slag), superplasticizer, and age are positively 
+                    correlated with concrete strength"),
+            tags$li("fly ash, water, course and fine aggregate are negatively 
+                    correlated with concrete strength")
+          ),
+          tags$br(),
+          tags$li("Interactions of each ingredient with age and strength of concrete
+                  provide observations, some of which are:"),
+          tags$ul(
+            tags$li("Moderately aged concrete (30 - 80 days) have the highest strength
+                    which increases with an increase in the amount of blast (slag)"),
+            tags$li("Moderately aged concrete (30 - 80 days) have the highest strength
+                    which increases with a decrease in the amount of water")
+          )
         )
       )),
-      tabItem("tab5",h1("Conclusion",style="color: red"), fluidPage(
-        tags$p("The following points summarize the observations in this report:"),
-        tags$ol(
-          tags$li("Histogram provides the distribution of every attribute. For cement, the histogram observes that cement concentration varies from 140 to 160 units most of the time."),
-          tags$li("Correlation between `water` and `slag` is 0.107"),
-          tags$li("Correlation between `cement` and `strength` is 0.498"),
-          tags$li("Correlation between `water` and `strength` is -0.289")
-        )
+      tabItem("tab6", fluidPage(
+        tags$h1("References", style = "color:red"),
+        tags$hr(),
+        tags$p("Shanawad, V. (2021)", tags$i("Civil Engineering: Cement Manufacturing Dataset, Kaggle"), ". Available at: 
+               https://www.kaggle.com/datasets/vinayakshanawad/cement-manufacturing-concrete-dataset 
+               (Accessed: November 30, 2022). "),
+        tags$br(),
+        tags$br(),
+        tags$br(),
+        tags$br(),
+        tags$br(),
+        tags$br(),
+        tags$b(tags$p("Created by", style = "color:red", align="right")),
+        tags$p("Shubhangi Sanyal", tags$br(), "MSc Data Science, 2022", tags$br(),
+               "Chennai Mathematical Institute", tags$br(), "Email:shubhangi@cmi.ac.in", align="right")
       ))
     )
-  ),
-  skin="red"
+  )
 )
 server <- function(input,output){
-  output$table<-renderTable({
-    Attribute=c('cement','slag','ash','water','superplastic','coarseagg','fineagg','age',
-        'strength')
-    Description=c("Cement measured in kg in a cubic metre mixture",
-                  "Blast measured in kg in a cubic metre mixture",
-                  "Fly ash measured in kg in a cubic metre mixture",
-                  "Water measured in kg in a cubic metre mixture",
-                  "Superplasticizer measured in kg in a cubic metre mixture",
-                  "Coarse Aggregate measured in kg in a cubic metre mixture",
-                  "Fine Aggregate measured in kg in a cubic metre mixture",
-                  "Age in days (1~365)",
-                  "Concrete compressive strength measured in MPa")
-    data.frame(cbind(Attribute, Description))
-  })
+  
+  Attribute=c('cement','slag','ash','water','superplastic','coarseagg','fineagg','age',
+              'strength')
+  Description=c("Cement measured in kg in a cubic metre mixture",
+                "Blast measured in kg in a cubic metre mixture",
+                "Fly ash measured in kg in a cubic metre mixture",
+                "Water measured in kg in a cubic metre mixture",
+                "Superplasticizer measured in kg in a cubic metre mixture",
+                "Coarse Aggregate measured in kg in a cubic metre mixture",
+                "Fine Aggregate measured in kg in a cubic metre mixture",
+                "Age in days (1~365)",
+                "Concrete compressive strength measured in MPa")
+  var_table<-data.frame(cbind(Attribute, Description))
+  
+  output$table <- renderTable(var_table, striped=TRUE)
+  
+  
   data <- read.csv("concrete.csv", header=TRUE, stringsAsFactors=FALSE)
+  
+  observeEvent(input$go0,
+               output$Data<-renderTable({
+                 data[input$row[1]:input$row[2],]
+               }, align='c', striped=TRUE, hover=TRUE, rownames=TRUE)
+  )
   
   #Histograms
   observeEvent(input$go1,
@@ -171,19 +246,22 @@ server <- function(input,output){
                  isolate(ggplot(data, aes(.data[[input$radio]])) + 
                            geom_histogram(bins=input$bins,color="black", fill = input$color1,
                                           aes(y = ..density..))+
-                   geom_density(lwd=0.7, color=2, fill=2, alpha=0.25)+
-                   xlab(paste(input$radio))+ylab("Frequency")+
-                   ggtitle(paste("Histogram and density plot of", input$radio)))
+                           geom_density(lwd=0.7, color=2, fill=2, alpha=0.25)+
+                           xlab(paste(input$radio))+ylab("Frequency")+
+                           ggtitle(paste("Histogram and density plot of", input$radio)))
                })
-               )
+              )
+  
   #Boxplot
+  
+  long_data <- data.frame(ingredient=rep(c("cement","slag","ash","water",
+                                           "superplastic","coarseagg","fineagg",
+                                           "age","strength"), each=1030),
+                          amount=c(data$cement, data$slag, data$ash, data$water, 
+                                   data$superplastic, data$coarseagg, 
+                                   data$fineagg, data$age, data$strength))
+  
   output$Boxplot <- renderPlot({
-    long_data <- data.frame(ingredient=rep(c("cement","slag","ash","water",
-                                             "superplastic","coarseagg","fineagg",
-                                             "age","strength"), each=1030),
-                            amount=c(data$cement, data$slag, data$ash, data$water, 
-                                     data$superplastic, data$coarseagg, 
-                                     data$fineagg, data$age, data$strength))
     ggplot(long_data, aes(x=ingredient,y=amount,fill=ingredient))+geom_boxplot()+
       ggtitle("Boxplot of all variables")+theme(legend.position="None")+ 
       scale_fill_brewer(palette="Paired")
@@ -200,11 +278,11 @@ server <- function(input,output){
   
   observeEvent(input$go3,
                output$MulScatter <- renderPlot({
-                 isolate(ggplot(data, aes(x = .data[[input$MulGroup[1]]], 
+                 isolate(ggplot(data, aes(x = .data[[input$MulGroup[3]]], 
                                           y = .data[[input$MulGroup[2]]], 
-                                          color = .data[[input$MulGroup[3]]]))+
+                                          color = .data[[input$MulGroup[1]]]))+
                            geom_point(size=1.7)+
-                           scale_color_gradient(low="blue", high="yellow")+
+                           scale_color_gradient(low="dark blue", high="red")+
                            ggtitle(paste("Scatter plot of",input$MulGroup[1],",",input$MulGroup[2],
                                          "and",input$MulGroup[3])))
                })
