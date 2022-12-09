@@ -148,11 +148,9 @@ The following points summarize the observations in this report:
 
 - Correlation between `water` and `strength` is -0.289.
 
+
 ## **References**
 
-- https://www.kaggle.com/datasets/vinayakshanawad/cement-manufacturing-concrete-dataset
-
-## **Links to dashboard and YouTube video**
-
-- Dashboard: https://shubhangisanyal.shinyapps.io/dashboard_shubhangi/
-- YouTube: https://www.youtube.com/watch?v=SM4EayRE-QY
+- [Dataset link](https://www.kaggle.com/datasets/vinayakshanawad/cement-manufacturing-concrete-dataset)
+- [Dashboard link](https://shubhangisanyal.shinyapps.io/dashboard_shubhangi/)
+- [YouTube link](https://www.youtube.com/watch?v=SM4EayRE-QY)
