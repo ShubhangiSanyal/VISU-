@@ -151,3 +151,8 @@ The following points summarize the observations in this report:
 ## **References**
 
 - https://www.kaggle.com/datasets/vinayakshanawad/cement-manufacturing-concrete-dataset
+
+## **Links to dashboard and YouTube video**
+
+- Dashboard: https://shubhangisanyal.shinyapps.io/dashboard_shubhangi/
+- YouTube: https://www.youtube.com/watch?v=SM4EayRE-QY
